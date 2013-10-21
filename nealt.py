@@ -1,0 +1,298 @@
+#!/usr/bin/python
+'Nova Echo Audit Log Tool'
+# Copyright (C) 2013  Tim Cumming
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Tim Cumming aka Elusive One
+# Created: 28/02/13
+
+import sys
+import os
+from operator import itemgetter, attrgetter
+
+
+# Start of main() function
+def main():
+
+    # Command line args are in sys.argv[1], sys.argv[2] ...
+    # sys.argv[0] is the script name itself and can be ignored
+    if sys.argv[1] == '-c':
+        compact = bool(True)
+        args = sys.argv[2:]
+    else:
+        compact = bool(False)
+        args = sys.argv[1:]    
+    
+    if not args:
+        print 'usage: [-c] logfile.txt '
+        sys.exit(1)
+
+    #print args
+    #print 'Processing Log(s): ', args, '...'   # Moved to file loop, shows progress
+
+    #Initialise lists
+    oreGroups = []
+    ice = []
+    salvage = []
+    minerals = []
+    other = []
+    
+    pilots = []
+    icePilots = []
+    orePilots = []
+    
+    oreTotals = []
+    iceTotals = []
+
+    # EVE ore groups as a dictionary
+    OreTypes = {'Arkonor': 'Arkonor',
+        'Bistot': 'Bistot',
+        'Crokite': 'Crokite',
+        'Dark Ochre': 'Dark Ochre',
+        'Gneiss': 'Gneiss',
+        'Hedbergite': 'Hedbergite',
+        'Hemorphite': 'Hemorphite',
+        'Jaspet': 'Jaspet',
+        'Kernite': 'Kernite', 'Mercoxit': 'Mercoxit',
+        'Omber': 'Omber', 'Golden Omber': 'Omber', 'Silvery Omber': 'Omber',
+        'Plagioclase': 'Plagioclase', 'Azure Plagioclase': 'Plagioclase', 'Rich Plagioclase': 'Plagioclase',
+        'Pyroxeres': 'Pyroxeres', 'Solid Pyroxeres': 'Pyroxeres',
+        'Scordite': 'Scordite', 'Condensed Scordite': 'Scordite', 'Massive Scordite': 'Scordite',
+        'Spodumain': 'Spodumain', 'Gleaming Spodumain': 'Spodumain', 'Bright Spodumain': 'Spodumain', 
+        'Veldspar': 'Veldspar', 'Concentrated Veldspar': 'Veldspar', 'Dense Veldspar': 'Veldspar'}
+    # EVE ore and ice volumes per unit as a dictionary
+    OreWeights = {'Arkonor': 16, 'Bistot': 16, 'Crokite': 16, 'Dark Ochre': 8,
+        'Gneiss': 5, 'Hedbergite': 3, 'Hemorphite': 3, 'Jaspet': 2,
+        'Kernite': 1.2, 'Mercoxit': 40, 'Omber': 0.6, 'Plagioclase': 0.35,
+        'Pyroxeres': 0.3, 'Scordite': 0.15, 'Spodumain': 16, 'Veldspar': 0.1}
+    IceTypes = {'Blue Ice': 1000}
+    SalvageTypes = {'Alloyed Tritanium Bar', 'Metal Scraps',
+        'Charred Micro Circuit', 'Tangled Power Conduit', 
+        'Contaminated Lorentz Fluid', 'Tripped Power Circuit',
+        'Malfunctioning Shield Emitter', 'Armor Plates', 
+        'Conductive Polymer', 'Contaminated Nanite Compound',
+        'Damaged Artificial Neural Network', 'Scorched Telemetry Processor',
+        'Smashed Trigger Unit', 'Burned Logic Circuit',
+        'Fried Interface Circuit', 'Ward Console', 
+        'Broken Drone Transceiver', 'Defective Current Pump'}
+    MineralTypes = {'Tritanium', 'Pyerite', 'Mexallon', 'Isogen',
+        'Nocxium', 'Zydrine', 'Megacyte', 'Morphite'}
+    PiTypes = {'Mechanical Parts', 'Robotics'}
+
+
+    for log in args:
+        assert os.path.exists(log), 'I can\'t find the file: %s' % (log)
+        obscuredPath = log.rpartition('/')
+        print 'Processing Log: ', obscuredPath[2], '...'
+
+        logFile = open(log, 'r')
+        content = logFile.readlines() + ['\r\n']
+        logFile.close()
+
+        for lineNum in range(len(content)):
+            # Process each line that was in the log file.
+            line = content[lineNum].rstrip('\r\n')
+
+            clean = line.strip()   # Removes newline characters
+            if len(clean) > 0:
+                data = clean.split('\t')   # Drops empty lines and outputs tuple
+                # Output: [0] Time, [1] Station, [2] Hanger, [3] Character, [4] Action, [5] Outcome, [6] ItemType, [7] Quantity
+
+                if data[0] != 'Time':   # Skip first line of log
+                    if data[3] not in pilots:
+                        pilots.append(data[3])
+                    if data[4] == 'Lock':
+                        # Split ore from other items
+                        if data[6] in OreTypes:
+                            if data[3] not in orePilots:
+                                orePilots.append(data[3])
+                            volume = (OreWeights[(OreTypes[(data[6])])] * int(data[7]))
+                            itemGroup = OreTypes[(data[6])]
+                            oreGroups.append([data[3], data[6], data[7], itemGroup, volume])
+                        # Split ice from other items
+                        elif data[6] in IceTypes:
+                            if data[3] not in icePilots:
+                                icePilots.append(data[3])
+                            volume = (IceTypes[(data[6])] * int(data[7]))
+                            ice.append([data[3], data[6], data[7], volume])
+                        elif data[6] in MineralTypes:
+                            minerals.append([data[3], data[6], data[7], 0])
+                        elif data[6] in SalvageTypes:
+                            salvage.append([data[3], data[6], data[7], 0])
+                        # Every thing else
+                        else:
+                            other.append([data[3], data[6], data[7], 0])
+                        
+
+    if compact is True:
+        print 'Compact Mode'
+        oreGroups = sorted(oreGroups, key=itemgetter(0,3))
+        for item in range(len(oreGroups)):
+            if item > 0:
+                previous = item -1
+                if (oreGroups[item][0] == oreGroups[previous][0]) and (oreGroups[item][3] == oreGroups[previous][3]):
+                    newQuantity = (int(oreGroups[item][2]) + int(oreGroups[previous][2]))
+                    newVolume = (OreWeights[oreGroups[item][3]] * int(newQuantity))
+                    oreGroups[item] = [oreGroups[item][0], oreGroups[item][3], newQuantity, oreGroups[item][3], newVolume]
+                    oreGroups[previous] = 'deleted'
+        
+        for o in oreGroups[:]:
+            if o == 'deleted':
+                oreGroups.remove(o)
+    else:
+        oreGroups = sorted(oreGroups, key=itemgetter(0,1))
+        for item in range(len(oreGroups)):
+            if item > 0:
+                previous = item -1
+                if (oreGroups[item][0] == oreGroups[previous][0]) and (oreGroups[item][1] == oreGroups[previous][1]):
+                    newQuantity = (int(oreGroups[item][2]) + int(oreGroups[previous][2]))
+                    newVolume = (OreWeights[oreGroups[item][3]] * int(newQuantity))
+                    oreGroups[item] = [oreGroups[item][0], oreGroups[item][1], newQuantity, oreGroups[item][3], newVolume]
+                    oreGroups[previous] = 'deleted'
+        
+        for o in oreGroups[:]:
+            if o == 'deleted':
+                oreGroups.remove(o)
+       
+
+    salvage = sorted(salvage, key=itemgetter(0,1))
+    for item in range(len(salvage)):
+        if item > 0:
+            previous = item -1
+            if (salvage[item][0] == salvage[previous][0]) and (salvage[item][1] == salvage[previous][1]):
+                newQuantity = (int(salvage[item][2]) + int(salvage[previous][2]))
+                salvage[item] = [salvage[item][0], salvage[item][1], newQuantity, 0]
+                salvage[previous] = 'deleted'
+                
+    for s in salvage[:]:
+        if s == 'deleted':
+            salvage.remove(s)
+
+
+    minerals = sorted(minerals, key=itemgetter(0,1))
+    for item in range(len(minerals)):
+        if item > 0:
+            previous = item -1
+            if (minerals[item][0] == minerals[previous][0]) and (minerals[item][1] == minerals[previous][1]):
+                newQuantity = (int(minerals[item][2]) + int(minerals[previous][2]))
+                minerals[item] = [minerals[item][0], minerals[item][1], newQuantity, 0]
+                minerals[previous] = 'deleted'
+                
+    for m in minerals[:]:
+        if m == 'deleted':
+            minerals.remove(m)
+
+
+    other = sorted(other, key=itemgetter(0,1))
+    for item in range(len(other)):
+        if item > 0:
+            previous = item -1
+            if (other[item][0] == other[previous][0]) and (other[item][1] == other[previous][1]):
+                newQuantity = (int(other[item][2]) + int(other[previous][2]))
+                other[item] = [other[item][0], other[item][1], newQuantity, 0]
+                other[previous] = 'deleted'
+
+    for e in other[:]:
+        if e == 'deleted':
+            other.remove(e)
+    
+    
+    if ice or oreGroups or salvage or minerals or other:
+        if ice:
+            totalIce = 0
+            for entry in ice:
+                totalIce = entry[3] + totalIce
+
+            print '\nIce:'
+            for name in sorted(icePilots):
+                pilotIce = 0
+                print '\n', name
+                for entry in sorted(ice, key=itemgetter(0,3)):
+                    if name == entry[0]:
+                        print entry[2], 'x', entry[1], '=', entry[3], 'm3'
+                        pilotIce = entry[3] + pilotIce
+                iceTotals.append([name,pilotIce,((pilotIce / totalIce) * 100)])
+    
+            iceTotals = sorted(iceTotals, key=itemgetter(2), reverse=True)
+            print '\n\nPercentage of Ice:', '(', totalIce, 'm3', ')', '\n'
+            for entry in range(len(iceTotals)):
+                if iceTotals[(entry)][1] > 0:
+                    print round((iceTotals[(entry)][2]), 2), '%', iceTotals[(entry)][0], ':', iceTotals[(entry)][1], 'm3'
+            print '\n'
+
+
+        if oreGroups:
+            totalOre = 0
+            for entry in oreGroups:
+                totalOre = entry[4] + totalOre
+
+            print '\nOre:'                
+            for name in sorted(orePilots):
+                pilotOre = 0
+                print '\n', name            
+                for entry in sorted(oreGroups, key=itemgetter(0,3)):
+                    if name == entry[0]:
+                        if compact is True:
+                            print entry[2], 'x', entry[3], '=', entry[4], 'm3'
+                        else:
+                            print entry[2], 'x', entry[1], '=', entry[4], 'm3'
+                        pilotOre = entry[4] + pilotOre
+                oreTotals.append([name,pilotOre,((pilotOre / totalOre) * 100)])
+    
+            oreTotals = sorted(oreTotals, key=itemgetter(2), reverse=True)
+            print '\n\nPercentage of Ore:', '(', totalOre, 'm3', ')', '\n'
+            for entry in range(len(oreTotals)):
+                if oreTotals[(entry)][1] > 0:
+                    print round((oreTotals[(entry)][2]), 2), '%', oreTotals[(entry)][0], ':', oreTotals[(entry)][1], 'm3'
+            print '\n'
+
+
+        if salvage:
+            print '\nSalvaged Components:'
+            pilot = ''
+            for entry in sorted(salvage, key=itemgetter(0)):
+                if pilot != entry[0]:
+                    pilot = entry[0]
+                    print '\n', pilot
+                print entry[2], 'x', entry[1]
+            print '\n'
+
+
+        if minerals:
+            print '\nMinerals:'
+            pilot = ''
+            for entry in sorted(minerals, key=itemgetter(0)):
+                if pilot != entry[0]:
+                    pilot = entry[0]
+                    print '\n', pilot
+                print entry[2], 'x', entry[1]
+            print '\n'
+
+
+        if other:
+            print '\nRecovered Items:'
+            pilot = ''
+            for entry in sorted(other, key=itemgetter(0)):
+                if pilot != entry[0]:
+                    pilot = entry[0]
+                    print '\n', pilot
+                print entry[2], 'x', entry[1]
+            print '\n'
+
+
+# Standard boilerplate to call the main() function to begin
+# the program.
+if __name__ == '__main__':
+    main()
