@@ -28,14 +28,14 @@ def main():
 
     # Command line args are in sys.argv[1], sys.argv[2] ...
     # sys.argv[0] is the script name itself and can be ignored
-    if sys.argv[1] == '-c':
-        compact = bool(True)
-        args = sys.argv[2:]
-    else:
-        compact = bool(False)
-        args = sys.argv[1:]    
-    
-    if not args:
+    if (len(sys.argv) > 1):
+        if sys.argv[1] == '-c':
+            compact = bool(True)
+            args = sys.argv[2:]
+        else:
+            compact = bool(False)
+            args = sys.argv[1:]  
+    else:  
         print 'usage: [-c] logfile.txt '
         sys.exit(1)
 
