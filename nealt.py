@@ -46,6 +46,7 @@ def main():
     oreGroups = []
     ice = []
     salvage = []
+    commodities = []
     minerals = []
     other = []
     
@@ -78,7 +79,7 @@ def main():
         'Kernite': 1.2, 'Mercoxit': 40, 'Omber': 0.6, 'Plagioclase': 0.35,
         'Pyroxeres': 0.3, 'Scordite': 0.15, 'Spodumain': 16, 'Veldspar': 0.1}
     IceTypes = {'Blue Ice': 1000}
-    SalvageTypes = {'Alloyed Tritanium Bar', 'Metal Scraps',
+    SalvageTypes = ['Alloyed Tritanium Bar', 'Metal Scraps',
         'Charred Micro Circuit', 'Tangled Power Conduit', 
         'Contaminated Lorentz Fluid', 'Tripped Power Circuit',
         'Malfunctioning Shield Emitter', 'Armor Plates', 
@@ -86,10 +87,40 @@ def main():
         'Damaged Artificial Neural Network', 'Scorched Telemetry Processor',
         'Smashed Trigger Unit', 'Burned Logic Circuit',
         'Fried Interface Circuit', 'Ward Console', 
-        'Broken Drone Transceiver', 'Defective Current Pump'}
-    MineralTypes = {'Tritanium', 'Pyerite', 'Mexallon', 'Isogen',
-        'Nocxium', 'Zydrine', 'Megacyte', 'Morphite'}
-    PiTypes = {'Mechanical Parts', 'Robotics'}
+        'Broken Drone Transceiver', 'Defective Current Pump']
+    MineralTypes = ['Tritanium', 'Pyerite', 'Mexallon', 'Isogen',
+        'Nocxium', 'Zydrine', 'Megacyte', 'Morphite']
+
+    # Planetary Interaction:
+    # Raw Materials:
+    PiRawMats = ['Aqueous Liquids', 'Autotrophs', 'Base Metals', 'Carbon Compounds', 'Complex Organisms',
+                 'Felsic Magma', 'Heavy Metals', 'Ionic Solutions', 'Micro Organisms', 'Noble Gas',
+                 'Noble Metals', 'Non-CS Crystals', 'Planktic Colonies', 'Reactive Gas', 'Suspended Plasma']
+
+    # Basic Commodities:
+    PiBasic = ['Water', 'Industrial Fibers', 'Reactive Metals', 'Biofuels', 'Proteins', 'Silicon', 'Toxic Metals',
+               'Electrolytes', 'Bacteria', 'Oxygen', 'Precious Metals', 'Chiral Structures', 'Biomass',
+               'Oxidizing Compound', 'Plasmoids']
+
+    # Advanced: 2 Part Commodities:
+    PiAdvanced2P = ['Biocells', 'Construction Blocks', 'Consumer Electronics', 'Coolant', 'Enriched Uranium', 'Fertilizer',
+                  'Gen. Enhanced Livestock', 'Livestock', 'Mechanical Parts', 'Microfiber Shielding', 'Miniature Electronics',
+                  'Nanites', 'Oxides', 'Polyaramids', 'Polytextiles', 'Rocket Fuel', 'Silicate Glass', 'Superconductors',
+                  'Supertensile Plastics', 'Synthetic Oil', 'Test Cultures', 'Transmitter', 'Viral Agent', 'Water-Cooled CPU']
+
+    # Advanced: 3 Part Commodities:
+    PiAdvanced3P = ['Biotech Research Reports', 'Camera Drones', 'Condensates', 'Cryoprotectant Solution', 'Data Chips',
+                    'Gel-Matrix Biopaste', 'Guidance Systems', 'Hazmat Detection Systems', 'Hermetic Membranes',
+                    'High-Tech Transmitters', 'Industrial Explosives', 'Neocoms', 'Nuclear Reactors', 'Planetary Vehicles',
+                    'Robotics', 'Smartfab Units', 'Supercomputers', 'Synthetic Synapses', 'Transcranial Microcontroller',
+                    'Ukomi Super Conductors', 'Vaccines']
+
+    # High Tech:
+    PiHighTech = ['Broadcast Node', 'Integrity Response Drones', 'Nano-Factory', 'Organic Mortar Applicators', 'Recursive Computing Module',
+                  'Self-Harmonizing Power Core', 'Sterile Conduits', 'Wetware Mainframe']
+
+    # Lets just combine them all for now, I'm thinking of separating them out later.
+    PiTypes = PiRawMats + PiBasic + PiAdvanced2P + PiAdvanced3P + PiHighTech
 
 
     for log in args:
@@ -131,6 +162,8 @@ def main():
                             minerals.append([data[3], data[6], data[7], 0])
                         elif data[6] in SalvageTypes:
                             salvage.append([data[3], data[6], data[7], 0])
+                        elif data[6] in PiTypes:
+                            commodities.append([data[3], data[6], data[7], 0])
                         # Every thing else
                         else:
                             other.append([data[3], data[6], data[7], 0])
@@ -193,6 +226,20 @@ def main():
     for m in minerals[:]:
         if m == 'deleted':
             minerals.remove(m)
+
+
+    commodities = sorted(commodities, key=itemgetter(0,1))
+    for item in range(len(commodities)):
+        if item > 0:
+            previous = item -1
+            if (commodities[item][0] == commodities[previous][0]) and (commodities[item][1] == commodities[previous][1]):
+                newQuantity = (int(commodities[item][2]) + int(commodities[previous][2]))
+                commodities[item] = [commodities[item][0], commodities[item][1], newQuantity, 0]
+                commodities[previous] = 'deleted'
+                
+    for c in commodities[:]:
+        if c == 'deleted':
+            commodities.remove(c)
 
 
     other = sorted(other, key=itemgetter(0,1))
@@ -274,6 +321,17 @@ def main():
             print '\nMinerals:'
             pilot = ''
             for entry in sorted(minerals, key=itemgetter(0)):
+                if pilot != entry[0]:
+                    pilot = entry[0]
+                    print '\n', pilot
+                print entry[2], 'x', entry[1]
+            print '\n'
+
+
+        if commodities:
+            print '\nPI Items:'
+            pilot = ''
+            for entry in sorted(commodities, key=itemgetter(0)):
                 if pilot != entry[0]:
                     pilot = entry[0]
                     print '\n', pilot
