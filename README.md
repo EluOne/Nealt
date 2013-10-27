@@ -8,7 +8,8 @@ At present it is a command line  application which will output the data from a s
 
 Usage: nealt.py [options] logs [...]
 
-Options
+Options:
+
 	-c    Run in condensed mode. Output is reduced to mineral groups from all mineral types.
 
 Currently this output groups by pilot and ore type, then outputs the fleet percentages of volume mined.
