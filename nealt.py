@@ -58,38 +58,37 @@ def main():
     iceTotals = []
 
     # EVE ore groups as a dictionary
-    OreTypes = {'Arkonor': 'Arkonor',
-        'Bistot': 'Bistot',
-        'Crokite': 'Crokite',
-        'Dark Ochre': 'Dark Ochre',
-        'Gneiss': 'Gneiss',
-        'Hedbergite': 'Hedbergite',
-        'Hemorphite': 'Hemorphite',
-        'Jaspet': 'Jaspet',
-        'Kernite': 'Kernite', 'Mercoxit': 'Mercoxit',
-        'Omber': 'Omber', 'Golden Omber': 'Omber', 'Silvery Omber': 'Omber',
-        'Plagioclase': 'Plagioclase', 'Azure Plagioclase': 'Plagioclase', 'Rich Plagioclase': 'Plagioclase',
-        'Pyroxeres': 'Pyroxeres', 'Solid Pyroxeres': 'Pyroxeres',
-        'Scordite': 'Scordite', 'Condensed Scordite': 'Scordite', 'Massive Scordite': 'Scordite',
-        'Spodumain': 'Spodumain', 'Gleaming Spodumain': 'Spodumain', 'Bright Spodumain': 'Spodumain', 
-        'Veldspar': 'Veldspar', 'Concentrated Veldspar': 'Veldspar', 'Dense Veldspar': 'Veldspar'}
+    OreTypes = {'Arkonor': 'Arkonor', 'Crimson Arkonor': 'Arkonor', 'Prime Arkonor': 'Arkonor', 
+                'Bistot': 'Bistot', 'Monoclinic Biscot': 'Biscot', 'Triclinic Biscot': 'Biscot',
+                'Crokite': 'Crokite', 'Crystalline Crokite': 'Crokite', 'Sharp Crokite': 'Crokite',
+                'Dark Ochre': 'Dark Ochre', 'Obsidian Ochre': 'Dark Ochre', 'Onyx Ochre': 'Dark Ochre',
+                'Gneiss': 'Gneiss', 'Iridescent Gneiss': 'Gneiss', 'Prismatic Gneiss': 'Gneiss',
+                'Hedbergite': 'Hedbergite', 'Glazed Hedbergite': 'Hedbergite', 'Vitric Hedbergite': 'Hedbergite',
+                'Hemorphite': 'Hemorphite', 'Radiant Hemorphite': 'Hemorphite', 'Vivid Hemorphite': 'Hemorphite',
+                'Jaspet': 'Jaspet', 'Jaspet': 'Pristine Jaspet', 'Pure Jaspet': 'Jaspet',
+                'Kernite': 'Kernite', 'Fiery Kernite': 'Kernite', 'Luminous Kernite': 'Kernite',
+                'Mercoxit': 'Mercoxit', 'Magma Mercoxit': 'Mercoxit', 'Vitreous Mercoxit': 'Mercoxit',
+                'Omber': 'Omber', 'Golden Omber': 'Omber', 'Silvery Omber': 'Omber',
+                'Plagioclase': 'Plagioclase', 'Azure Plagioclase': 'Plagioclase', 'Rich Plagioclase': 'Plagioclase',
+                'Pyroxeres': 'Pyroxeres', 'Solid Pyroxeres': 'Pyroxeres',
+                'Scordite': 'Scordite', 'Condensed Scordite': 'Scordite', 'Massive Scordite': 'Scordite',
+                'Spodumain': 'Spodumain', 'Gleaming Spodumain': 'Spodumain', 'Bright Spodumain': 'Spodumain', 
+                'Veldspar': 'Veldspar', 'Concentrated Veldspar': 'Veldspar', 'Dense Veldspar': 'Veldspar'}
     # EVE ore and ice volumes per unit as a dictionary
     OreWeights = {'Arkonor': 16, 'Bistot': 16, 'Crokite': 16, 'Dark Ochre': 8,
-        'Gneiss': 5, 'Hedbergite': 3, 'Hemorphite': 3, 'Jaspet': 2,
-        'Kernite': 1.2, 'Mercoxit': 40, 'Omber': 0.6, 'Plagioclase': 0.35,
-        'Pyroxeres': 0.3, 'Scordite': 0.15, 'Spodumain': 16, 'Veldspar': 0.1}
-    IceTypes = {'Blue Ice': 1000}
-    SalvageTypes = ['Alloyed Tritanium Bar', 'Metal Scraps',
-        'Charred Micro Circuit', 'Tangled Power Conduit', 
-        'Contaminated Lorentz Fluid', 'Tripped Power Circuit',
-        'Malfunctioning Shield Emitter', 'Armor Plates', 
-        'Conductive Polymer', 'Contaminated Nanite Compound',
-        'Damaged Artificial Neural Network', 'Scorched Telemetry Processor',
-        'Smashed Trigger Unit', 'Burned Logic Circuit',
-        'Fried Interface Circuit', 'Ward Console', 
-        'Broken Drone Transceiver', 'Defective Current Pump']
-    MineralTypes = ['Tritanium', 'Pyerite', 'Mexallon', 'Isogen',
-        'Nocxium', 'Zydrine', 'Megacyte', 'Morphite']
+                  'Gneiss': 5, 'Hedbergite': 3, 'Hemorphite': 3, 'Jaspet': 2,
+                  'Kernite': 1.2, 'Mercoxit': 40, 'Omber': 0.6, 'Plagioclase': 0.35,
+                  'Pyroxeres': 0.3, 'Scordite': 0.15, 'Spodumain': 16, 'Veldspar': 0.1}
+    IceTypes = {'Blue Ice': 1000, 'White Glaze': 1000, 'Pristine White Glaze': 1000,
+                'Glacial Mass': 1000, 'Smooth Glacial Mass': 1000, 'Blue Ice': 1000,
+                'Thick Blue Ice': 1000, 'Clear Icicle': 1000, 'Enriched Clear Icicle': 1000,
+                'Glare Crust': 1000, 'Dark Glitter': 1000, 'Gelidus': 1000, 'Krystallos': 1000}
+    SalvageTypes = ['Alloyed Tritanium Bar', 'Metal Scraps','Charred Micro Circuit', 'Tangled Power Conduit', 
+                    'Contaminated Lorentz Fluid', 'Tripped Power Circuit','Malfunctioning Shield Emitter',
+                    'Armor Plates', 'Conductive Polymer', 'Contaminated Nanite Compound','Damaged Artificial Neural Network',
+                    'Scorched Telemetry Processor','Smashed Trigger Unit', 'Burned Logic Circuit','Fried Interface Circuit',
+                    'Ward Console', 'Broken Drone Transceiver', 'Defective Current Pump']
+    MineralTypes = ['Tritanium', 'Pyerite', 'Mexallon', 'Isogen','Nocxium', 'Zydrine', 'Megacyte', 'Morphite']
 
     # Planetary Interaction:
     # Raw Materials:
