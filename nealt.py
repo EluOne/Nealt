@@ -18,6 +18,7 @@
 # Author: Tim Cumming aka Elusive One
 # Created: 28/02/13
 
+import argparse
 import sys
 import os
 from operator import itemgetter, attrgetter
@@ -26,21 +27,14 @@ from operator import itemgetter, attrgetter
 # Start of main() function
 def main():
 
-    # Command line args are in sys.argv[1], sys.argv[2] ...
-    # sys.argv[0] is the script name itself and can be ignored
-    if (len(sys.argv) > 1):
-        if sys.argv[1] == '-c':
-            compact = bool(True)
-            args = sys.argv[2:]
-        else:
-            compact = bool(False)
-            args = sys.argv[1:]  
-    else:  
-        print 'usage: [-c] logfile.txt '
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description='Nova Echo Audit Log Tool')
+    parser.add_argument("log", nargs="+",
+                        help="list of log files")
+    parser.add_argument("-c", "--compact", action="store_true",
+                        help="compact mode  - (reduces returned ore data by group)")
 
-    #print args
-    #print 'Processing Log(s): ', args, '...'   # Moved to file loop, shows progress
+    args = parser.parse_args()
+    logs = args.log
 
     #Initialise lists
     oreGroups = []
@@ -122,7 +116,7 @@ def main():
     PiTypes = PiRawMats + PiBasic + PiAdvanced2P + PiAdvanced3P + PiHighTech
 
 
-    for log in args:
+    for log in logs:
         assert os.path.exists(log), 'I can\'t find the file: %s' % (log)
         obscuredPath = log.rpartition('/')
         print 'Processing Log: ', obscuredPath[2], '...'
@@ -168,7 +162,7 @@ def main():
                             other.append([data[3], data[6], data[7], 0])
                         
 
-    if compact is True:
+    if args.compact is True:
         print 'Compact Mode'
         oreGroups = sorted(oreGroups, key=itemgetter(0,3))
         for item in range(len(oreGroups)):
@@ -269,7 +263,7 @@ def main():
                     if name == entry[0]:
                         print entry[2], 'x', entry[1], '=', entry[3], 'm3'
                         pilotIce = entry[3] + pilotIce
-                iceTotals.append([name,pilotIce,((pilotIce / totalIce) * 100)])
+                iceTotals.append([name,pilotIce,((float(pilotIce) / float(totalIce)) * 100)])
     
             iceTotals = sorted(iceTotals, key=itemgetter(2), reverse=True)
             print '\n\nPercentage of Ice:', '(', totalIce, 'm3', ')', '\n'
@@ -290,7 +284,7 @@ def main():
                 print '\n', name            
                 for entry in sorted(oreGroups, key=itemgetter(0,3)):
                     if name == entry[0]:
-                        if compact is True:
+                        if args.compact is True:
                             print entry[2], 'x', entry[3], '=', entry[4], 'm3'
                         else:
                             print entry[2], 'x', entry[1], '=', entry[4], 'm3'
