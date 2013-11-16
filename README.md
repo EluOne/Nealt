@@ -6,11 +6,11 @@ Currently audit logs have to be manually created by copy and pasting the log win
 
 At present it is a command line  application which will output the data from a single or list of log files selected by the user.
 
-Usage: nealt.py [options] logs [...]
+usage: nealt.py [-h] [-c] log [log ...]
 
-Options:
+optional arguments:
 
-	-c    Run in condensed mode. Output is reduced to mineral groups from all mineral types.
+  -c, --compact  compact mode. output is reduced to mineral groups
 
 Currently this output groups by pilot and ore type, then outputs the fleet percentages of volume mined.
 Salvaged materials, PI commodities and everything else not ice or ore currently dumps into their own sections only grouped by pilot.

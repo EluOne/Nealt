@@ -31,7 +31,7 @@ def main():
     parser.add_argument("log", nargs="+",
                         help="list of log files")
     parser.add_argument("-c", "--compact", action="store_true",
-                        help="compact mode  - (reduces returned ore data by group)")
+                        help="compact mode. output is reduced to mineral groups")
 
     args = parser.parse_args()
     logs = args.log
