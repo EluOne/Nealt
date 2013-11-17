@@ -119,7 +119,7 @@ def main():
     for log in logs:
         assert os.path.exists(log), 'I can\'t find the file: %s' % (log)
         obscuredPath = log.rpartition('/')
-        print 'Processing Log: ', obscuredPath[2], '...'
+        print('Processing Log: ', obscuredPath[2], '...')
 
         logFile = open(log, 'r')
         content = logFile.readlines() + ['\r\n']
@@ -163,7 +163,7 @@ def main():
                         
 
     if args.compact is True:
-        print 'Compact Mode'
+        print('Compact Mode')
         oreGroups = sorted(oreGroups, key=itemgetter(0,3))
         for item in range(len(oreGroups)):
             if item > 0:
@@ -255,22 +255,22 @@ def main():
             for entry in ice:
                 totalIce = entry[3] + totalIce
 
-            print '\nIce:'
+            print('\nIce:')
             for name in sorted(icePilots):
                 pilotIce = 0
-                print '\n', name
+                print('\n', name)
                 for entry in sorted(ice, key=itemgetter(0,3)):
                     if name == entry[0]:
-                        print entry[2], 'x', entry[1], '=', entry[3], 'm3'
+                        print(entry[2], 'x', entry[1], '=', entry[3], 'm3')
                         pilotIce = entry[3] + pilotIce
                 iceTotals.append([name,pilotIce,((float(pilotIce) / float(totalIce)) * 100)])
     
             iceTotals = sorted(iceTotals, key=itemgetter(2), reverse=True)
-            print '\n\nPercentage of Ice:', '(', totalIce, 'm3', ')', '\n'
+            print('\n\nPercentage of Ice:', '(', totalIce, 'm3', ')', '\n')
             for entry in range(len(iceTotals)):
                 if iceTotals[(entry)][1] > 0:
-                    print round((iceTotals[(entry)][2]), 2), '%', iceTotals[(entry)][0], ':', iceTotals[(entry)][1], 'm3'
-            print '\n'
+                    print(round((iceTotals[(entry)][2]), 2), '%', iceTotals[(entry)][0], ':', iceTotals[(entry)][1], 'm3')
+            print('\n')
 
 
         if oreGroups:
@@ -278,69 +278,69 @@ def main():
             for entry in oreGroups:
                 totalOre = entry[4] + totalOre
 
-            print '\nOre:'                
+            print('\nOre:')
             for name in sorted(orePilots):
                 pilotOre = 0
-                print '\n', name            
+                print('\n', name)
                 for entry in sorted(oreGroups, key=itemgetter(0,3)):
                     if name == entry[0]:
                         if args.compact is True:
-                            print entry[2], 'x', entry[3], '=', entry[4], 'm3'
+                            print(entry[2], 'x', entry[3], '=', entry[4], 'm3')
                         else:
-                            print entry[2], 'x', entry[1], '=', entry[4], 'm3'
+                            print(entry[2], 'x', entry[1], '=', entry[4], 'm3')
                         pilotOre = entry[4] + pilotOre
                 oreTotals.append([name,pilotOre,((pilotOre / totalOre) * 100)])
     
             oreTotals = sorted(oreTotals, key=itemgetter(2), reverse=True)
-            print '\n\nPercentage of Ore:', '(', totalOre, 'm3', ')', '\n'
+            print('\n\nPercentage of Ore:', '(', totalOre, 'm3', ')', '\n')
             for entry in range(len(oreTotals)):
                 if oreTotals[(entry)][1] > 0:
-                    print round((oreTotals[(entry)][2]), 2), '%', oreTotals[(entry)][0], ':', oreTotals[(entry)][1], 'm3'
-            print '\n'
+                    print(round((oreTotals[(entry)][2]), 2), '%', oreTotals[(entry)][0], ':', oreTotals[(entry)][1], 'm3')
+            print('\n')
 
 
         if salvage:
-            print '\nSalvaged Components:'
+            print('\nSalvaged Components:')
             pilot = ''
             for entry in sorted(salvage, key=itemgetter(0)):
                 if pilot != entry[0]:
                     pilot = entry[0]
-                    print '\n', pilot
-                print entry[2], 'x', entry[1]
-            print '\n'
+                    print('\n', pilot)
+                print(entry[2], 'x', entry[1])
+            print('\n')
 
 
         if minerals:
-            print '\nMinerals:'
+            print('\nMinerals:')
             pilot = ''
             for entry in sorted(minerals, key=itemgetter(0)):
                 if pilot != entry[0]:
                     pilot = entry[0]
-                    print '\n', pilot
-                print entry[2], 'x', entry[1]
-            print '\n'
+                    print('\n', pilot)
+                print(entry[2], 'x', entry[1])
+            print('\n')
 
 
         if commodities:
-            print '\nPI Items:'
+            print('\nPI Items:')
             pilot = ''
             for entry in sorted(commodities, key=itemgetter(0)):
                 if pilot != entry[0]:
                     pilot = entry[0]
-                    print '\n', pilot
-                print entry[2], 'x', entry[1]
-            print '\n'
+                    print('\n', pilot)
+                print(entry[2], 'x', entry[1])
+            print('\n')
 
 
         if other:
-            print '\nRecovered Items:'
+            print('\nRecovered Items:')
             pilot = ''
             for entry in sorted(other, key=itemgetter(0)):
                 if pilot != entry[0]:
                     pilot = entry[0]
-                    print '\n', pilot
-                print entry[2], 'x', entry[1]
-            print '\n'
+                    print('\n', pilot)
+                print(entry[2], 'x', entry[1])
+            print('\n')
 
 
 # Standard boilerplate to call the main() function to begin
