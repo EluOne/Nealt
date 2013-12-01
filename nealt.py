@@ -134,7 +134,7 @@ def main():
                 data = clean.split('\t')   # Drops empty lines and outputs tuple
                 # Output: [0] Time, [1] Station, [2] Hanger, [3] Character, [4] Action, [5] Outcome, [6] ItemType, [7] Quantity
 
-                if data[0] != 'Time':   # Skip first line of log
+                if data[0] != 'Time':   # Skip first line of log, audit logs manually generated may not have this.
                     if data[3] not in pilots:
                         pilots.append(data[3])
                     if data[4] == 'Lock':
@@ -341,6 +341,9 @@ def main():
                     print(('\n%s' % pilot))
                 print(('%s x %s' % (entry[2], entry[1])))
             print('\n')
+            
+    else:
+        print('Nothing found in log to report.')
 
 
 # Standard boilerplate to call the main() function to begin
