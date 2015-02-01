@@ -36,23 +36,23 @@ def main():
     args = parser.parse_args()
     logs = args.log
 
-    #Initialise lists
+    # Initialise lists
     oreGroups = []
     ice = []
     salvage = []
     commodities = []
     minerals = []
     other = []
-    
+
     pilots = []
     icePilots = []
     orePilots = []
-    
+
     oreTotals = []
     iceTotals = []
 
     # EVE ore groups as a dictionary
-    OreTypes = {'Arkonor': 'Arkonor', 'Crimson Arkonor': 'Arkonor', 'Prime Arkonor': 'Arkonor', 
+    OreTypes = {'Arkonor': 'Arkonor', 'Crimson Arkonor': 'Arkonor', 'Prime Arkonor': 'Arkonor',
                 'Bistot': 'Bistot', 'Monoclinic Biscot': 'Biscot', 'Triclinic Biscot': 'Biscot',
                 'Crokite': 'Crokite', 'Crystalline Crokite': 'Crokite', 'Sharp Crokite': 'Crokite',
                 'Dark Ochre': 'Dark Ochre', 'Obsidian Ochre': 'Dark Ochre', 'Onyx Ochre': 'Dark Ochre',
@@ -66,7 +66,7 @@ def main():
                 'Plagioclase': 'Plagioclase', 'Azure Plagioclase': 'Plagioclase', 'Rich Plagioclase': 'Plagioclase',
                 'Pyroxeres': 'Pyroxeres', 'Solid Pyroxeres': 'Pyroxeres',
                 'Scordite': 'Scordite', 'Condensed Scordite': 'Scordite', 'Massive Scordite': 'Scordite',
-                'Spodumain': 'Spodumain', 'Gleaming Spodumain': 'Spodumain', 'Bright Spodumain': 'Spodumain', 
+                'Spodumain': 'Spodumain', 'Gleaming Spodumain': 'Spodumain', 'Bright Spodumain': 'Spodumain',
                 'Veldspar': 'Veldspar', 'Concentrated Veldspar': 'Veldspar', 'Dense Veldspar': 'Veldspar'}
     # EVE ore and ice volumes per unit as a dictionary
     OreWeights = {'Arkonor': 16, 'Bistot': 16, 'Crokite': 16, 'Dark Ochre': 8,
@@ -77,12 +77,12 @@ def main():
                 'Glacial Mass': 1000, 'Smooth Glacial Mass': 1000, 'Blue Ice': 1000,
                 'Thick Blue Ice': 1000, 'Clear Icicle': 1000, 'Enriched Clear Icicle': 1000,
                 'Glare Crust': 1000, 'Dark Glitter': 1000, 'Gelidus': 1000, 'Krystallos': 1000}
-    SalvageTypes = ['Alloyed Tritanium Bar', 'Metal Scraps','Charred Micro Circuit', 'Tangled Power Conduit', 
-                    'Contaminated Lorentz Fluid', 'Tripped Power Circuit','Malfunctioning Shield Emitter',
-                    'Armor Plates', 'Conductive Polymer', 'Contaminated Nanite Compound','Damaged Artificial Neural Network',
-                    'Scorched Telemetry Processor','Smashed Trigger Unit', 'Burned Logic Circuit','Fried Interface Circuit',
+    SalvageTypes = ['Alloyed Tritanium Bar', 'Metal Scraps', 'Charred Micro Circuit', 'Tangled Power Conduit',
+                    'Contaminated Lorentz Fluid', 'Tripped Power Circuit', 'Malfunctioning Shield Emitter',
+                    'Armor Plates', 'Conductive Polymer', 'Contaminated Nanite Compound', 'Damaged Artificial Neural Network',
+                    'Scorched Telemetry Processor', 'Smashed Trigger Unit', 'Burned Logic Circuit', 'Fried Interface Circuit',
                     'Ward Console', 'Broken Drone Transceiver', 'Defective Current Pump']
-    MineralTypes = ['Tritanium', 'Pyerite', 'Mexallon', 'Isogen','Nocxium', 'Zydrine', 'Megacyte', 'Morphite']
+    MineralTypes = ['Tritanium', 'Pyerite', 'Mexallon', 'Isogen', 'Nocxium', 'Zydrine', 'Megacyte', 'Morphite']
 
     # Planetary Interaction:
     # Raw Materials:
@@ -97,9 +97,9 @@ def main():
 
     # Advanced: 2 Part Commodities:
     PiAdvanced2P = ['Biocells', 'Construction Blocks', 'Consumer Electronics', 'Coolant', 'Enriched Uranium', 'Fertilizer',
-                  'Gen. Enhanced Livestock', 'Livestock', 'Mechanical Parts', 'Microfiber Shielding', 'Miniature Electronics',
-                  'Nanites', 'Oxides', 'Polyaramids', 'Polytextiles', 'Rocket Fuel', 'Silicate Glass', 'Superconductors',
-                  'Supertensile Plastics', 'Synthetic Oil', 'Test Cultures', 'Transmitter', 'Viral Agent', 'Water-Cooled CPU']
+                    'Gen. Enhanced Livestock', 'Livestock', 'Mechanical Parts', 'Microfiber Shielding', 'Miniature Electronics',
+                    'Nanites', 'Oxides', 'Polyaramids', 'Polytextiles', 'Rocket Fuel', 'Silicate Glass', 'Superconductors',
+                    'Supertensile Plastics', 'Synthetic Oil', 'Test Cultures', 'Transmitter', 'Viral Agent', 'Water-Cooled CPU']
 
     # Advanced: 3 Part Commodities:
     PiAdvanced3P = ['Biotech Research Reports', 'Camera Drones', 'Condensates', 'Cryoprotectant Solution', 'Data Chips',
@@ -114,7 +114,6 @@ def main():
 
     # Lets just combine them all for now, I'm thinking of separating them out later.
     PiTypes = PiRawMats + PiBasic + PiAdvanced2P + PiAdvanced3P + PiHighTech
-
 
     for log in logs:
         assert os.path.exists(log), 'I can\'t find the file: %s' % (log)
@@ -160,85 +159,80 @@ def main():
                         # Every thing else
                         else:
                             other.append([data[3], data[6], data[7], 0])
-                        
 
     if args.compact is True:
         print('Compact Mode')
-        oreGroups = sorted(oreGroups, key=itemgetter(0,3))
+        oreGroups = sorted(oreGroups, key=itemgetter(0, 3))
         for item in range(len(oreGroups)):
             if item > 0:
-                previous = item -1
+                previous = item - 1
                 if (oreGroups[item][0] == oreGroups[previous][0]) and (oreGroups[item][3] == oreGroups[previous][3]):
                     newQuantity = (int(oreGroups[item][2]) + int(oreGroups[previous][2]))
                     newVolume = (OreWeights[oreGroups[item][3]] * int(newQuantity))
                     oreGroups[item] = [oreGroups[item][0], oreGroups[item][3], newQuantity, oreGroups[item][3], newVolume]
                     oreGroups[previous] = 'deleted'
-        
+
         for o in oreGroups[:]:
             if o == 'deleted':
                 oreGroups.remove(o)
     else:
-        oreGroups = sorted(oreGroups, key=itemgetter(0,1))
+        oreGroups = sorted(oreGroups, key=itemgetter(0, 1))
         for item in range(len(oreGroups)):
             if item > 0:
-                previous = item -1
+                previous = item - 1
                 if (oreGroups[item][0] == oreGroups[previous][0]) and (oreGroups[item][1] == oreGroups[previous][1]):
                     newQuantity = (int(oreGroups[item][2]) + int(oreGroups[previous][2]))
                     newVolume = (OreWeights[oreGroups[item][3]] * int(newQuantity))
                     oreGroups[item] = [oreGroups[item][0], oreGroups[item][1], newQuantity, oreGroups[item][3], newVolume]
                     oreGroups[previous] = 'deleted'
-        
+
         for o in oreGroups[:]:
             if o == 'deleted':
                 oreGroups.remove(o)
-       
 
-    salvage = sorted(salvage, key=itemgetter(0,1))
+    salvage = sorted(salvage, key=itemgetter(0, 1))
     for item in range(len(salvage)):
         if item > 0:
-            previous = item -1
+            previous = item - 1
             if (salvage[item][0] == salvage[previous][0]) and (salvage[item][1] == salvage[previous][1]):
                 newQuantity = (int(salvage[item][2]) + int(salvage[previous][2]))
                 salvage[item] = [salvage[item][0], salvage[item][1], newQuantity, 0]
                 salvage[previous] = 'deleted'
-                
+
     for s in salvage[:]:
         if s == 'deleted':
             salvage.remove(s)
 
-
-    minerals = sorted(minerals, key=itemgetter(0,1))
+    minerals = sorted(minerals, key=itemgetter(0, 1))
     for item in range(len(minerals)):
         if item > 0:
-            previous = item -1
+            previous = item - 1
             if (minerals[item][0] == minerals[previous][0]) and (minerals[item][1] == minerals[previous][1]):
                 newQuantity = (int(minerals[item][2]) + int(minerals[previous][2]))
                 minerals[item] = [minerals[item][0], minerals[item][1], newQuantity, 0]
                 minerals[previous] = 'deleted'
-                
+
     for m in minerals[:]:
         if m == 'deleted':
             minerals.remove(m)
 
-
-    commodities = sorted(commodities, key=itemgetter(0,1))
+    commodities = sorted(commodities, key=itemgetter(0, 1))
     for item in range(len(commodities)):
         if item > 0:
-            previous = item -1
+            previous = item - 1
             if (commodities[item][0] == commodities[previous][0]) and (commodities[item][1] == commodities[previous][1]):
                 newQuantity = (int(commodities[item][2]) + int(commodities[previous][2]))
                 commodities[item] = [commodities[item][0], commodities[item][1], newQuantity, 0]
                 commodities[previous] = 'deleted'
-                
+
     for c in commodities[:]:
         if c == 'deleted':
             commodities.remove(c)
 
-
-    other = sorted(other, key=itemgetter(0,1))
+    other = sorted(other, key=itemgetter(0, 1))
     for item in range(len(other)):
         if item > 0:
-            previous = item -1
+            previous = item - 1
             if (other[item][0] == other[previous][0]) and (other[item][1] == other[previous][1]):
                 newQuantity = (int(other[item][2]) + int(other[previous][2]))
                 other[item] = [other[item][0], other[item][1], newQuantity, 0]
@@ -247,8 +241,7 @@ def main():
     for e in other[:]:
         if e == 'deleted':
             other.remove(e)
-    
-    
+
     if ice or oreGroups or salvage or minerals or other:
         if ice:
             totalIce = 0
@@ -259,19 +252,18 @@ def main():
             for name in sorted(icePilots):
                 pilotIce = 0
                 print(('\n%s' % name))
-                for entry in sorted(ice, key=itemgetter(0,3)):
+                for entry in sorted(ice, key=itemgetter(0, 3)):
                     if name == entry[0]:
                         print(('%s x  %s = %sm3' % (entry[2], entry[1], entry[3])))
                         pilotIce = entry[3] + pilotIce
-                iceTotals.append([name,pilotIce,((float(pilotIce) / float(totalIce)) * 100)])
-    
+                iceTotals.append([name, pilotIce, ((float(pilotIce) / float(totalIce)) * 100)])
+
             iceTotals = sorted(iceTotals, key=itemgetter(2), reverse=True)
             print(('\nPercentage of Ice: (%sm3)\n' % (totalIce)))
             for entry in range(len(iceTotals)):
                 if iceTotals[(entry)][1] > 0:
                     print(('%.2f%% %s: %s m3' % ((iceTotals[(entry)][2]), iceTotals[(entry)][0], iceTotals[(entry)][1])))
             print('\n')
-
 
         if oreGroups:
             totalOre = 0
@@ -282,22 +274,21 @@ def main():
             for name in sorted(orePilots):
                 pilotOre = 0
                 print(('\n%s' % name))
-                for entry in sorted(oreGroups, key=itemgetter(0,3)):
+                for entry in sorted(oreGroups, key=itemgetter(0, 3)):
                     if name == entry[0]:
                         if args.compact is True:
                             print(('%s x  %s = %.2fm3' % (entry[2], entry[3], entry[4])))
                         else:
                             print(('%s x  %s = %.2fm3' % (entry[2], entry[1], entry[4])))
                         pilotOre = entry[4] + pilotOre
-                oreTotals.append([name,pilotOre,((pilotOre / totalOre) * 100)])
-    
+                oreTotals.append([name, pilotOre, ((pilotOre / totalOre) * 100)])
+
             oreTotals = sorted(oreTotals, key=itemgetter(2), reverse=True)
             print(('\nPercentage of Ore: (%.2fm3)\n' % (totalOre)))
             for entry in range(len(oreTotals)):
                 if oreTotals[(entry)][1] > 0:
                     print(('%.2f%% %s: %.2f m3' % ((oreTotals[(entry)][2]), oreTotals[(entry)][0], oreTotals[(entry)][1])))
             print('\n')
-
 
         if salvage:
             print('\nSalvaged Components:')
@@ -309,7 +300,6 @@ def main():
                 print(('%s x %s' % (entry[2], entry[1])))
             print('\n')
 
-
         if minerals:
             print('\nMinerals:')
             pilot = ''
@@ -319,7 +309,6 @@ def main():
                     print(('\n%s' % pilot))
                 print(('%s x %s' % (entry[2], entry[1])))
             print('\n')
-
 
         if commodities:
             print('\nPI Items:')
@@ -331,7 +320,6 @@ def main():
                 print(('%s x %s' % (entry[2], entry[1])))
             print('\n')
 
-
         if other:
             print('\nRecovered Items:')
             pilot = ''
@@ -341,7 +329,7 @@ def main():
                     print(('\n%s' % pilot))
                 print(('%s x %s' % (entry[2], entry[1])))
             print('\n')
-            
+
     else:
         print('Nothing found in log to report.')
 
